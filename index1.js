@@ -1,3 +1,5 @@
+// based on this https://stackoverflow.com/questions/48872514/implementing-min-heap-using-an-array
+
 // global
 let size = 0;
 let heap = new Array();
