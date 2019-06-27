@@ -1,15 +1,15 @@
 // based on this https://stackoverflow.com/questions/48872514/implementing-min-heap-using-an-array
 
-// global
-let size = 0;
-let heap = new Array();
+// global, no var
+global.size = 0;
+global.heap = new Array();
 
 
 const heapifyDown = () => {
-  // root already return, largest_item at root, i pts to root
+  // i tracks big
   let i = 1;
 
-  // i < size (size is the last_item_index)
+  // i larger and larger, bound
   while(i < size) {
     // left child
     let left_c = 2*i;
@@ -17,108 +17,92 @@ const heapifyDown = () => {
     // right child
     let right_c = 2*i + 1;
 
-    // tmp var
+    // tmp
     let t;
 
-    // left_child bigger size, stop going down
+    // t = left_child
     if (left_c <= size) {
-      // left_child into tmp
       t = left_c;
     } else {
+      // left_child out bound
       break;
     }
 
-    // right_child bigger size, so use left_child
+    // right_child < left_child, smaller, small vs inserted_item
     if (right_c <= size && heap[left_c] > heap[right_c]) {
-      // left_child VS right_child, pick smaller
       t = right_c;
     }
 
-    // root_item, found its position, stop
+    // inserted_found, stop
     if(heap[i] < heap[t]) {
-
       console.log('heap[i] < heap[t]: ', i, heap[i], t, heap[t]);
-
       break;
     }
 
-    // e.g. root to tmp
-    let temp = heap[i];
-
-    // e.g. child to parent
+    // swap
+    let tmp = heap[i];
     heap[i] = heap[t];
+    heap[t] = tmp;
 
-    // parent to child
-    heap[t] = temp;
-
-    // i goes down
+    // i larger and larger
     i = t;
   }
 }
 
 // delete root
 const deleteMin = () => {
-  // get root
+  // get min at top
   let t = heap[1];
 
-  // last item to root, why?????
+  // last item to top
   heap[1] = heap[size];
   
-  // destroy this item
+  // destroy last item
   heap[size] = null;
 
-  // --
+  // 1 item less
   size = size - 1;
 
-  // arr last item go down
+  // top to down
   heapifyDown();
 
   // return small
   return t;
 }
 
-
-//
 const heapifyUp = () => {
-  // inserted_item to arr end, i pts to last item (size is last item index)
+  // i tracks end
   let i = size;
 
-  // loop, inserted_item from bottom, going up
   while(1) { 
-    // use math, i/2 works out parent
+    // parent
     let parent = Math.floor(i/2);
 
-    // parent_index > 0, parent is there
-    // parent > child (need swap)
+    // parent less and less; need swap
     if (parent > 0 && heap[parent] > heap[i]) {
-      // parent to tmp
+      // swap
       let t = heap[parent];
-      
-      // inserted_item assign to parent (i.e. go up)
       heap[parent] = heap[i];
-
-      // parent goes to inserted_item position (i.e. go down)
       heap[i] = t;
 
-      // i points to insert_item
+      // i tracks inserted
       i = parent;
 
     } else {
-      // inserted_item cannot go up, done out
+      // found position
       break;
     }
   }
 }
 
-// 
 const insert = (item) => {
-    // size has to be up first, because starts 0
+    // size starts 0
     size = size + 1;
 
-    // put new item at the end of arr, heap up
+    // to end arr
     heap[size] = item;
 
-    // arr last item go up
+    // go up
     heapifyUp();
 }
 
@@ -131,17 +115,15 @@ const buildHeap = (arr) => {
 const findKthLargest = (ns, k) => {
     buildHeap(ns.slice(0, k));
     
-    // rest
+    // rest element
     for (let value of ns.slice(k)) {
-        // index 1
+        // value is bigger than min, delete min, insert value
         if (value > heap[1]) {
             deleteMin();
             insert(value);
         }
     }
-    
-    console.log(heap)
-    
+
     return heap[1];
 }
 
