@@ -3,10 +3,10 @@ var heap = new Array(); // 0 is not used
 var size = 0;
 
 const heapifyDown = () => {
-  // root already return, largest_item at root, i pts to root
+  // largest on top, i tracks
   let i = 1;
 
-  // i < size (size is the last_item_index)
+  // i larger and larger, bound
   while(i < size) {
     // left child
     let left_c = 2*i;
@@ -14,71 +14,71 @@ const heapifyDown = () => {
     // right child
     let right_c = 2*i + 1;
 
-    // tmp var
+    // tmp
     let t;
 
-    // left_child bigger size, stop going down
     if (left_c <= size) {
-      // left_child into tmp
+      // left_child in bound. Use it
       t = left_c;
     } else {
+      // left_child > last_index, stop
       break;
     }
 
-    // right_child bigger size, so use left_child
+    // 1. right_child in bound
+    // 2. somehow, left_child > right_child, pick smaller, because smaller to top
     if (right_c <= size && heap[left_c] > heap[right_c]) {
-      // left_child VS right_child, pick smaller
       t = right_c;
     }
 
-    // root_item, found its position, stop
+    // 1. inserted_item >= 1 of children, inserted_item goes down
+    // 2. inserted_item < 1 of children, inserted_item found position
     if(heap[i] < heap[t]) {
-
       console.log('heap[i] < heap[t]: ', i, heap[i], t, heap[t]);
-
       break;
     }
 
-    // e.g. root to tmp
-    let temp = heap[i];
+    // inserted_item to tmp
+    let tmp = heap[i];
 
-    // e.g. child to parent
+    // 1 of children to parent
     heap[i] = heap[t];
 
-    // parent to child
-    heap[t] = temp;
+    // inserted_item to 1 of children
+    heap[t] = tmp;
 
-    // i goes down
+    // i tracks inserted_item
     i = t;
   }
 }
 
 const heapifyUp = () => {
-  // inserted_item to arr end, i pts to last item (size is last item index)
+  // item inserted at end, flow up, i tracks
   let i = size;
 
-  // loop, inserted_item from bottom, going up
+  // infi loop
   while(1) { 
-    // use math, i/2 works out parent
+    // i needs to be last, because i/2 === parent
     let parent = Math.floor(i/2);
 
-    // parent_index > 0, parent is there
-    // parent > child (need swap)
+    // 1. parent smaller and smaller, so bound;
+    // 2. parent > child, not min heap, swap
     if (parent > 0 && heap[parent] > heap[i]) {
       // parent to tmp
       let t = heap[parent];
       
-      // inserted_item assign to parent (i.e. go up)
+      // child to parent
       heap[parent] = heap[i];
 
-      // parent goes to inserted_item position (i.e. go down)
+      // parent to child
       heap[i] = t;
 
-      // i points to insert_item
+      // i pts back to inserted_item
       i = parent;
 
     } else {
-      // inserted_item cannot go up, done out
+      // 1. inserted_item on root
+      // 2. or inserted_item > parent i.e. cannot go up
       break;
     }
   }
@@ -86,47 +86,50 @@ const heapifyUp = () => {
 
 // 
 const insert = (item) => {
-  // size has to be up first, because starts 0
+  // size starts 0, ++
   size = size + 1;
 
-  // put new item at the end of arr, heap up
+  // in arr, small item 1st, big item last, put inserted last
+  // flow up
   heap[size] = item;
 
-  // arr last item go up
+  // flow up
   heapifyUp();
 }
 
 // delete root
 const deleteMin = () => {
-  // get root
+  // smallest on top, get it
   let t = heap[1];
 
-  // last item to root, why?????
+  // get largest, put it on top, it flows down, shuffle all along the way
   heap[1] = heap[size];
   
-  // destroy this item
+  // destroy last item
   heap[size] = null;
 
-  // --
+  // size reduce
   size = size - 1;
 
-  // arr last item go down
+  // last item go down
   heapifyDown();
 
-  // return small
+  // return min
   return t;
 }
 
 // print
 const printHeap = () => {
-  // index as 1
+  // index 1
   let i = 1;
-  // size is all elements
+
+  // 1, 2, 3... size
   while(i <= size){
     console.log('element: ', heap[i]);
-    // ++
+    // advance
     i++;
   }
+
   // space
   console.log();
 }
